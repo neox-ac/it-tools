@@ -156,9 +156,9 @@ const tools = computed<ToolCategory[]>(() => [
   }
 }
 
-/* ===== 新增：隐藏主内容区的滚动条 ===== */
-/* 使用 :deep() 穿透到子组件 MenuLayout 的内部 */
-:deep(.n-layout .n-layout-content) {
+/* ===== 修正：隐藏主内容区的滚动条 ===== */
+/* 根据原始代码的线索，.n-layout-scroll-container 是正确的目标 */
+:deep(.n-layout-scroll-container) {
   /* Firefox */
   scrollbar-width: none;
   /* Chrome, Safari, Edge */
@@ -166,7 +166,7 @@ const tools = computed<ToolCategory[]>(() => [
     display: none;
   }
 }
-/* ===== 新增结束 ===== */
+/* ===== 修正结束 ===== */
 
 
 /* ===== Flexbox 布局样式 ===== */
