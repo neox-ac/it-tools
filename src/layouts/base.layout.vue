@@ -34,17 +34,17 @@ const tools = computed<ToolCategory[]>(() => [
 <template>
   <MenuLayout class="menu-layout" :class="{ isSmallScreen: styleStore.isSmallScreen }">
     <template #sider>
-
       <div class="sider-content">
-        <div v-if="styleStore.isSmallScreen" flex flex-col items-center>
-          <locale-selector w="90%" />
-
-          <div flex justify-center>
-            <NavbarButtons />
+        <div class="menu-and-selector-wrapper">
+          <div v-if="styleStore.isSmallScreen" flex flex-col items-center>
+            <locale-selector w="90%" />
+            <div flex justify-center>
+              <NavbarButtons />
+            </div>
           </div>
-        </div>
 
-        <CollapsibleToolMenu :tools-by-category="tools" />
+          <CollapsibleToolMenu :tools-by-category="tools" />
+        </div>
 
         <div class="footer">
           <div>
@@ -77,67 +77,112 @@ const tools = computed<ToolCategory[]>(() => [
     </template>
 
     <template #content>
-      <div flex items-center justify-center gap-2>
-        <c-button
-          circle
-          variant="text"
-          :aria-label="$t('home.toggleMenu')"
-          @click="styleStore.isMenuCollapsed = !styleStore.isMenuCollapsed"
-        >
-          <NIcon size="25" :component="Menu2" />
-        </c-button>
+      <div class="content-wrapper">
+        <div class="navbar-wrapper">
+          <div flex items-center justify-center gap-2>
+            <c-button
+              circle
+              variant="text"
+              :aria-label="$t('home.toggleMenu')"
+              @click="styleStore.isMenuCollapsed = !styleStore.isMenuCollapsed"
+            >
+              <NIcon size="25" :component="Menu2" />
+            </c-button>
 
-        <c-tooltip :tooltip="$t('home.home')" position="bottom">
-          <c-button to="/" circle variant="text" :aria-label="$t('home.home')">
-            <NIcon size="25" :component="Home2" />
-          </c-button>
-        </c-tooltip>
+            <c-tooltip :tooltip="$t('home.home')" position="bottom">
+              <c-button to="/" circle variant="text" :aria-label="$t('home.home')">
+                <NIcon size="25" :component="Home2" />
+              </c-button>
+            </c-tooltip>
 
-        <c-tooltip :tooltip="$t('home.uiLib')" position="bottom">
-          <c-button v-if="config.app.env === 'development'" to="/c-lib" circle variant="text" :aria-label="$t('home.uiLib')">
-            <icon-mdi:brush-variant text-20px />
-          </c-button>
-        </c-tooltip>
+            <c-tooltip :tooltip="$t('home.uiLib')" position="bottom">
+              <c-button v-if="config.app.env === 'development'" to="/c-lib" circle variant="text" :aria-label="$t('home.uiLib')">
+                <icon-mdi:brush-variant text-20px />
+              </c-button>
+            </c-tooltip>
 
-        <command-palette />
+            <command-palette />
 
-        <locale-selector v-if="!styleStore.isSmallScreen" />
+            <locale-selector v-if="!styleStore.isSmallScreen" />
 
-        <div>
-          <NavbarButtons v-if="!styleStore.isSmallScreen" />
+            <div>
+              <NavbarButtons v-if="!styleStore.isSmallScreen" />
+            </div>
+
+            <c-tooltip position="bottom" :tooltip="$t('home.support')">
+              <c-button
+                round
+                href="https://www.buymeacoffee.com/cthmsst"
+                rel="noopener"
+                target="_blank"
+                class="support-button"
+                :bordered="false"
+                @click="() => tracker.trackEvent({ eventName: 'Support button clicked' })"
+              >
+                {{ $t('home.buyMeACoffee') }}
+                <NIcon v-if="!styleStore.isSmallScreen" :component="Heart" ml-2 />
+              </c-button>
+            </c-tooltip>
+          </div>
         </div>
 
-        <c-tooltip position="bottom" :tooltip="$t('home.support')">
-          <c-button
-            round
-            href="https://www.buymeacoffee.com/cthmsst"
-            rel="noopener"
-            target="_blank"
-            class="support-button"
-            :bordered="false"
-            @click="() => tracker.trackEvent({ eventName: 'Support button clicked' })"
-          >
-            {{ $t('home.buyMeACoffee') }}
-            <NIcon v-if="!styleStore.isSmallScreen" :component="Heart" ml-2 />
-          </c-button>
-        </c-tooltip>
+        <div class="main-content">
+          <slot />
+        </div>
       </div>
-      <slot />
     </template>
   </MenuLayout>
 </template>
 
 <style lang="less" scoped>
-// ::v-deep(.n-layout-scroll-container) {
-//     @percent: 4%;
-//     @position: 25px;
-//     @size: 50px;
-//     @color: #eeeeee25;
-//     background-image: radial-gradient(@color @percent, transparent @percent),
-//         radial-gradient(@color @percent, transparent @percent);
-//     background-position: 0 0, @position @position;
-//     background-size: @size @size;
-// }
+/* ===== 新增的全屏和内部滚动样式 ===== */
+
+.menu-layout {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.navbar-wrapper {
+  flex-shrink: 0;
+  padding: 12px;
+  border-bottom: 1px solid v-bind('themeVars.dividerColor');
+}
+
+.main-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* ===== 侧边栏紧凑布局样式 ===== */
+
+.sider-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: 20px;
+}
+
+.menu-and-selector-wrapper {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+.footer {
+  flex-shrink: 0;
+  text-align: center;
+  color: #838587;
+  padding: 20px 0;
+}
+
+/* ===== 其他样式 ===== */
 
 .support-button {
   background: rgb(37, 99, 108);
@@ -149,57 +194,6 @@ const tools = computed<ToolCategory[]>(() => [
     color: #fff;
     padding-left: 30px;
     padding-right: 30px;
-  }
-}
-
-.footer {
-  text-align: center;
-  color: #838587;
-  margin-top: 20px;
-  padding: 20px 0;
-}
-
-.sider-content {
-  padding-top: 20px;
-  padding-bottom: 200px;
-}
-
-.hero-wrapper {
-  position: absolute;
-  display: block;
-  left: 0;
-  width: 100%;
-  z-index: 10;
-  overflow: hidden;
-
-  .gradient {
-    margin-top: -65px;
-  }
-
-  .text-wrapper {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    top: 16px;
-    color: #fff;
-
-    .title {
-      font-size: 25px;
-      font-weight: 600;
-    }
-
-    .divider {
-      width: 50px;
-      height: 2px;
-      border-radius: 4px;
-      background-color: v-bind('themeVars.primaryColor');
-      margin: 0 auto 5px;
-    }
-
-    .subtitle {
-      font-size: 16px;
-    }
   }
 }
 </style>
