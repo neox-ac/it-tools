@@ -5,7 +5,6 @@ import { RouterLink } from 'vue-router';
 import { Heart, Home2, Menu2 } from '@vicons/tabler';
 
 import { storeToRefs } from 'pinia';
-import HeroGradient from '../assets/hero-gradient.svg?component';
 import MenuLayout from '../components/MenuLayout.vue';
 import NavbarButtons from '../components/NavbarButtons.vue';
 import { useStyleStore } from '@/stores/style.store';
@@ -35,18 +34,6 @@ const tools = computed<ToolCategory[]>(() => [
 <template>
   <MenuLayout class="menu-layout" :class="{ isSmallScreen: styleStore.isSmallScreen }">
     <template #sider>
-      <RouterLink to="/" class="hero-wrapper">
-        <HeroGradient class="gradient" />
-        <div class="text-wrapper">
-          <div class="title">
-            IT - TOOLS
-          </div>
-          <div class="divider" />
-          <div class="subtitle">
-            {{ $t('home.subtitle') }}
-          </div>
-        </div>
-      </RouterLink>
 
       <div class="sider-content">
         <div v-if="styleStore.isSmallScreen" flex flex-col items-center>
@@ -173,7 +160,7 @@ const tools = computed<ToolCategory[]>(() => [
 }
 
 .sider-content {
-  padding-top: 160px;
+  padding-top: 20px;
   padding-bottom: 200px;
 }
 
